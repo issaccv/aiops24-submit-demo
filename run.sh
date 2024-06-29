@@ -1,5 +1,7 @@
 #!/bin/bash
 
+TEAM_NAME=team-name
+
 git lfs install
 
 # download the model if you need
@@ -11,15 +13,15 @@ git clone https://www.modelscope.cn/datasets/issaccv/aiops2024-challenge-dataset
 unzip data/data.zip -d data/
 
 # build docker image
-docker build -t team-name .
+docker build -t "$TEAM_NAME" .
 
 # run docker container with model and data volume with sub network
-docker run --gpus=all -itd --network=aiops24 --name team-name -v $PWD/src:/app -v $PWD/model/BAAI:/app/BAAI -v $PWD/data:/data team-name 
+docker run --gpus=all -itd --network=aiops24 --name "$TEAM_NAME" -v $PWD/src:/app -v $PWD/model/BAAI:/app/BAAI -v $PWD/data:/data "$TEAM_NAME" 
 
-docker wait team-name
+docker wait "$TEAM_NAME"
 
 # copy the output file from the container to the host
-docker cp team-name:/app/submit_result.jsonl answer.jsonl
+docker cp "$TEAM_NAME":/app/submit_result.jsonl answer.jsonl
 
 # remove the container
-docker stop team-name && docker rm team-name
+docker stop "$TEAM_NAME" && docker rm "$TEAM_NAME"
