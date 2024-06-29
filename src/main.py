@@ -14,20 +14,21 @@ from pipeline.rag import QdrantRetriever, generation_with_knowledge_retrieval
 
 
 async def main():
-    
     config = dotenv_values(".env")
 
-    config["COLLECTION_NAME"] = os.getenv("COLLECTION_NAME", config.get("COLLECTION_NAME"))
+    config["COLLECTION_NAME"] = os.getenv(
+        "COLLECTION_NAME", config.get("COLLECTION_NAME")
+    )
     config["VECTOR_SIZE"] = os.getenv("VECTOR_SIZE", config.get("VECTOR_SIZE"))
     config["OLLAMA_URL"] = os.getenv("OLLAMA_URL", config.get("OLLAMA_URL"))
 
     # 初始化 LLM 嵌入模型 和 Reranker
     llm = Ollama(
-        model="qwen", base_url=config["OLLAMA_URL"], temperature=0, request_timeout=120
+        model="qwen2", base_url=config["OLLAMA_URL"], temperature=0, request_timeout=120
     )
     embeding = HuggingFaceEmbedding(
         model_name="BAAI/bge-small-zh-v1.5",
-        cache_folder="/model",
+        cache_folder="./",
         embed_batch_size=128,
     )
     Settings.embed_model = embeding
@@ -40,7 +41,7 @@ async def main():
     )
 
     if collection_info.points_count == 0:
-        data = read_data("data")
+        data = read_data("/data/data")
         pipeline = build_pipeline(llm, embeding, vector_store=vector_store)
         # 暂时停止实时索引
         await client.update_collection(
@@ -57,7 +58,7 @@ async def main():
 
     retriever = QdrantRetriever(vector_store, embeding, similarity_top_k=3)
 
-    queries = read_jsonl("question.jsonl")
+    queries = read_jsonl("/data/question.jsonl")
 
     # 生成答案
     print("Start generating answers...")
