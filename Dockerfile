@@ -1,5 +1,5 @@
 # Use the official Python base image
-FROM python:3.12-slim
+FROM python:3.10-slim
 
 ENV COLLECTION_NAME=aiops24
 ENV VECTOR_SIZE=512
@@ -11,7 +11,7 @@ COPY src/* /app
 
 WORKDIR /app
 
-RUN pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements-3.12.txt
+RUN pip install --no-cache-dir --index-url https://mirrors.aliyun.com/pypi/simple/ -r requirements-3.10.txt
 
 # expose /data and /model as volumes
 VOLUME [ "/data", "/model" ]
